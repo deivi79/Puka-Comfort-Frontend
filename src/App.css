@@ -1,0 +1,73 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #f0d0d8;
+  border-radius: 16px;
+  background: #fff;
+  overflow: hidden;            /* recorta lo que se salga */
+}
+
+/* Contenedor de la imagen con relación fija (vertical) */
+.card-media {
+  width: 100%;
+  aspect-ratio: 4 / 5;         /* ancho : alto → todas iguales */
+  background: #f7f7f7;
+  overflow: hidden;
+}
+
+/* La imagen se recorta para cubrir sin deformarse */
+.card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;           /* recorta manteniendo proporciones */
+  object-position: center;
+  display: block;
+}
+
+/* Cuerpo de la tarjeta */
+.card .body {
+  padding: 12px 14px 16px;
+}
