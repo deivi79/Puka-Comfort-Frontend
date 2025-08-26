@@ -23,7 +23,7 @@ export default function Tienda(){
   return (
     <main>
       <style>{`
-        .shop-container{ max-width:1100px; margin:0 auto; padding:0 24px 40px; }
+        
 
         .shop-title{
           font-family:'Agelia', system-ui, sans-serif;
@@ -72,10 +72,26 @@ export default function Tienda(){
           .shop-grid{ grid-template-columns: 1fr; gap:26px; }
           .shop-figure{ width: 240px; height: 180px; }
         }
+
+        .page-title {
+          font-family:'Agelia', system-ui, sans-serif;
+          font-size:34px;
+          line-height:1.05;
+          margin:22px 0 10px;
+        }
+        .shop-container{ 
+          max-width:1100px; 
+          margin:0 auto; 
+          padding:24px;   /* ✅ igual que Equipo.jsx */
+        }
+
+
       `}</style>
 
       <div className="shop-container">
-        <Reveal as="h1" className="shop-title">Tienda Puka</Reveal>
+        <Reveal as="h1" className="page-title">
+          Tienda Puka
+        </Reveal>
 
         {loading && <p className="shop-note">Cargando productos…</p>}
         {error && <p className="shop-note">Ups, no pudimos cargar la tienda: {error.message}</p>}

@@ -180,9 +180,15 @@ export default function Equipo() {
           line-height: 1.05;
           margin: 22px 0 10px;
         }
-      `}</style>
+        .page-title {
+          font-family: 'Agelia', system-ui, sans-serif;
+          font-size: 34px;
+          line-height: 1.05;
+          margin: 22px 0 10px;   /* ✅ mismo espaciado arriba y abajo */
+        }
+        `}</style>
 
-      <Reveal as="h1" className="shop-title">
+      <Reveal as="h1" className="page-title">
         Nuestro equipo
       </Reveal>
 

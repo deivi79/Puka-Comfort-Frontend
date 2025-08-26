@@ -38,7 +38,11 @@ export default function Convocatoria(){
           0% { background-position: 200% 0 }
           100% { background-position: -200% 0 }
         }
-        .calls-wrap{ max-width:1100px; margin:0 auto; padding:0 24px 40px; }
+        .calls-wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px;   /* ✅ mismo padding que Equipo.jsx */
+          }
         .calls-title{
           font-family:'Agelia', system-ui, sans-serif;
           font-size:36px; line-height:1.05; text-align:center;

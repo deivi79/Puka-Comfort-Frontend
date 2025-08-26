@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { api } from '../api'
+import { absUrl } from '../url'
 import Carousel from '../components/Carousel'
 
 export default function Home(){
@@ -7,6 +9,7 @@ export default function Home(){
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [showRest, setShowRest] = useState(false)
+  const nav = useNavigate()
 
   useEffect(() => {
     let alive = true
@@ -28,13 +31,14 @@ export default function Home(){
     return () => { alive = false }
   }, [])
 
+  const fallbackImg = '/images/placeholder.jpg'
   const items = featured.map(p => ({
     id: p.id ?? p.slug,
-    slug: p.slug ?? String(p.id ?? ''),
+    slug: encodeURIComponent(p.slug ?? String(p.id ?? '')),
     title: p.title ?? '',
     excerpt: p.excerpt ?? '',
-    hero_image: p.hero_image || p.cover_image || p.image || p.thumbnail || '/images/placeholder.jpg',
-    cover_image: p.cover_image || p.hero_image || p.image || p.thumbnail || '/images/placeholder.jpg'
+    hero_image: absUrl(p.hero_image || p.cover_image || p.image || p.thumbnail) || fallbackImg,
+    cover_image: absUrl(p.cover_image || p.hero_image || p.image || p.thumbnail) || fallbackImg
   }))
 
   return (
@@ -45,7 +49,7 @@ export default function Home(){
           <Carousel
             items={items}
             interval={6000}
-            onClickSlide={(it)=> location.href = `/noticias/${it.slug}`}
+            onClickSlide={(it)=> nav(`/noticias/${it.slug}`)}  // ✅ navegación SPA
           />
         ) : (
           <div className="hero-skeleton" aria-hidden="true">

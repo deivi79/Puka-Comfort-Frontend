@@ -17,7 +17,11 @@ export default function NoticiasList(){
   return (
     <main>
       <style>{`
-        .news-wrap{ max-width:1100px; margin:0 auto; padding:0 24px 40px; }
+        .news-wrap {
+          max-width: 1100px;
+          margin: 0 auto;
+          padding: 24px;   /* ✅ igual que Equipo.jsx */
+        }
 
         /* H1 con fuente oficial */
         .news-title{
