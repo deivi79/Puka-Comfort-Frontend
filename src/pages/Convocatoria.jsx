@@ -17,12 +17,27 @@ export default function Convocatoria(){
     return () => { mounted = false }
   }, [])
 
-  // 🔹 SIEMPRE usar imagen general, no del API
-  const heroImg = '/public/images/voluntariado.jpg' // cámbiala por la que quieras
+  // ✅ imágenes de public/ se usan desde la raíz (SIN /public)
+  const heroImg = '/images/voluntariado.jpg'
+
+  const SKELE = {
+    box: {
+      height: 180,
+      width: 300,
+      borderRadius: 6,
+      background: 'linear-gradient(90deg,#f3f3f3 25%,#ecebeb 37%,#f3f3f3 63%)',
+      backgroundSize: '400% 100%',
+      animation: 'pulse 1.2s ease-in-out infinite'
+    }
+  }
 
   return (
     <main>
       <style>{`
+        @keyframes pulse {
+          0% { background-position: 200% 0 }
+          100% { background-position: -200% 0 }
+        }
         .calls-wrap{ max-width:1100px; margin:0 auto; padding:0 24px 40px; }
         .calls-title{
           font-family:'Agelia', system-ui, sans-serif;
@@ -72,7 +87,6 @@ export default function Convocatoria(){
       <div className="calls-wrap">
         <Reveal as="h1" className="calls-title">Convocatoria de voluntariado</Reveal>
 
-        {/* Hero SIEMPRE genérico */}
         <Reveal className="calls-hero" delay={40}>
           <img src={heroImg} alt="Convocatorias de voluntariado" loading="lazy" decoding="async" />
         </Reveal>
@@ -84,11 +98,15 @@ export default function Convocatoria(){
           <div className="calls-grid">
             {rows.map((c, i) => {
               const src = c.partner_logo || c.image
-              const img = src ? (absUrl ? absUrl(src) : src) : ''
+              const img = src ? absUrl(src) : ''   // ✅ aplica helper siempre
               return (
                 <Reveal key={c.id || c.slug || i} className="call-card" delay={70*i}>
                   <div className="call-logoBox">
-                    {img && <img src={img} alt={c.partner_name || c.title} loading="lazy" decoding="async" />}
+                    {img ? (
+                      <img src={img} alt={c.partner_name || c.title} loading="lazy" decoding="async" />
+                    ) : (
+                      <div style={SKELE.box} />
+                    )}
                   </div>
 
                   {c.apply_url && (
