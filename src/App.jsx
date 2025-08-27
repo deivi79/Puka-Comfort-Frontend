@@ -47,7 +47,7 @@ export default function App(){
 
         /* ===== HEADER ===== */
         header.nav{
-          position:sticky; top:0; z-index:2000;      /* ↑ por encima del hero */
+          position:sticky; top:0; z-index:2000;
           background:var(--pink);
           border-bottom:1px solid rgba(0,0,0,.05);
           box-shadow:0 2px 10px rgba(0,0,0,.04);
@@ -102,7 +102,7 @@ export default function App(){
             transform:translateY(-12px);
             opacity:0; pointer-events:none;
             transition:opacity .2s ease, transform .2s ease;
-            z-index:2100;  /* sobre overlay y sobre hero */
+            z-index:2100;
           }
           .drawer.open{ transform:translateY(0); opacity:1; pointer-events:auto; }
 
@@ -123,7 +123,7 @@ export default function App(){
             display:block;
             position:fixed; inset:0; background:rgba(0,0,0,.25);
             opacity:0; pointer-events:none; transition:opacity .2s ease;
-            z-index:1900;   /* debajo del header/drawer, encima del hero */
+            z-index:1900;
           }
           .overlay.open{ opacity:1; pointer-events:auto; }
         }
@@ -140,18 +140,35 @@ export default function App(){
           background-repeat:repeat; background-position:0 0; background-size:var(--pattern-size) auto;
           padding:36px 0 48px; border-top:1px solid #eee;
         }
-        .info-inner{ display:grid; grid-template-columns:1.2fr .8fr .5fr; gap:40px; align-items:center; }
+
+        /* Aquí el cambio: solo DOS columnas => texto (1fr) + social (auto) */
+        .info-inner{
+          display:grid;
+          grid-template-columns: 1fr auto;
+          gap:40px;
+          align-items:flex-start;
+        }
+
         .info-text{ font-family:'Cobbler Sans',system-ui,sans-serif; font-size:15px; line-height:1.55; }
         .info-text p{ margin:8px 0; color:#2b2b2b }
         .info-text p strong{ display:block; font-family:'Agelia',system-ui,sans-serif; font-size:22px; line-height:1.15; margin-bottom:8px; }
         .info-logo{ max-width:320px; width:100%; height:auto }
-        .social-col{ justify-self:end; text-align:center; display:flex; flex-direction:column; align-items:center; gap:12px; }
+
+        /* A la derecha y en columna */
+        .social-col{
+          justify-self:end;
+          text-align:right;
+          display:flex;
+          flex-direction:column;
+          align-items:flex-end;
+          gap:12px;
+        }
         .social-title{ font-family:'Cobbler Sans',system-ui,sans-serif; font-size:16px; margin:0 0 6px; }
         .social-col img{ width:52px; height:52px; display:block; }
 
         @media (max-width:880px){
           .info-inner{ grid-template-columns:1fr; gap:24px; }
-          .social-col{ justify-self:center; }
+          .social-col{ justify-self:center; align-items:center; text-align:center; }
         }
       `}</style>
 
@@ -227,13 +244,12 @@ export default function App(){
             <p><strong>Comunícate con nosotros</strong></p>
             <p>Correo general: <a href="mailto:pukacomfort@gmail.com">pukacomfort@gmail.com</a></p>
             <p>De lunes a viernes de 9 am a 7:30 pm y los sábados de 9 am a 2:30 pm.</p><br/>
-            <p>Si eres empresa y deseas hacer una alianza escríbenos a <a href="mailto:pukacomfort@gmail.com">pukacomfort@gmail.com</a></p>
-            <p>Si tienes alguna observación escríbenos a <a href="mailto:pukacomfort@gmail.com">pukacomfort@gmail.com</a></p>
-          </div>
-
-          <div style={{ textAlign:'center' }}>
-            {/* usa una imagen que tengas en /public/images */}
-            <img className="info-logo" src="/images/Logo/Logos_Mesa de trabajo 1.png" alt="Puka Comfort" />
+            <p>Si eres empresa y deseas hacer una alianza escríbenos a 
+              <a href="mailto:pukacomfort@gmail.com">pukacomfort@gmail.com</a>
+            </p>
+            <p>Si tienes alguna observación escríbenos a 
+              <a href="mailto:pukacomfort@gmail.com">pukacomfort@gmail.com</a>
+            </p>
           </div>
 
           <aside className="social-col">
@@ -244,7 +260,7 @@ export default function App(){
             <a href="https://www.instagram.com/TU_USUARIO" target="_blank" rel="noopener noreferrer">
               <img src="/icons/instagram.png" alt="Instagram" />
             </a>
-            <a href="https://www.linkedin.com/company/TU_EMPRESA" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.linkedin.com/in/TU_USUARIO" target="_blank" rel="noopener noreferrer">
               <img src="/icons/linkedin.png" alt="LinkedIn" />
             </a>
           </aside>
