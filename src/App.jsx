@@ -56,52 +56,66 @@ export default function App(){
 
         .nav-left{ cursor:pointer; }
         .nav-logo{
-          height:100px;  /* fijo */
+          height:100px;
           width:auto; display:block; object-fit:contain; max-width:100%;
         }
 
-        /* ===== MENÚ: grid 5 columnas iguales + wrap controlado ===== */
+        /* ===== MENÚ ===== */
         .nav-menu{
           display:grid;
-          grid-template-columns: repeat(5, minmax(140px, 1fr)); /* cada celda al menos 140px */
-          align-items:center;
-          justify-items:center;       /* centra cada ítem */
-          column-gap:48px;            /* separación prudente entre ítems */
+          grid-template-columns: repeat(5, minmax(140px, 1fr));
+          align-items:stretch;
+          justify-items:center;
+          column-gap:48px;
           width:100%;
           font-family:'Agelia',system-ui,sans-serif;
-          font-size:24px; line-height:1.05;
+          font-size:24px;
         }
         .nav-menu a{
-          display:inline-block;
+          /* centrado perfecto y espacio para la “pill” inferior */
+          display:flex;
+          flex-direction:column;        /* texto arriba, marca abajo */
+          align-items:center;
+          justify-content:center;
+          gap:6px;
+
           text-align:center;
           text-decoration:none;
           color:var(--text);
 
-          /* ✅ permitir 2 líneas bien balanceadas (evita cortes feos) */
           white-space:normal;
-          text-wrap:balance;          /* navegadores modernos */
-          word-break:keep-all;        /* no partas palabras */
+          text-wrap:balance;
+          word-break:keep-all;
 
-          /* limitar un poco el ancho para forzar el salto natural en frases largas */
           max-width:180px;
-
-          padding:14px 6px 18px;
+          min-height:64px;              /* misma altura 1 o 2 líneas */
+          padding:10px 12px 18px;       /* deja aire para la marca */
           position:relative;
           transition:color .18s ease;
+          line-height:1.1;
         }
         .nav-menu a:hover,
         .nav-menu a:focus-visible{ color:#000; }
-        .nav-menu a[aria-current="page"]{ color:#000; }
+
+        /* Marca activa: pill corta, centrada y redondeada */
+        .nav-menu a[aria-current="page"]{
+          color:#000;
+        }
         .nav-menu a[aria-current="page"]::after{
           content:"";
-          position:absolute; left:50%; transform:translateX(-50%);
-          bottom:6px; width:56px; height:3px;
-          background:var(--pink-strong); border-radius:2px;
+          position:absolute;
+          left:50%;
+          transform:translateX(-50%);
+          bottom:8px;                   /* distancia constante bajo el texto */
+          width:52px;                   /* ancho de la línea */
+          height:4px;                   /* alto de la línea */
+          background:var(--pink-strong);
+          border-radius:999px;          /* redondeado total */
         }
 
         main{ min-height:60vh; }
 
-        /* ===== Banda info con patrón (más pequeña) ===== */
+        /* ===== Banda info ===== */
         .info-band{
           --bg: #F9C7CF;
           --pattern-size: 140px;
@@ -147,7 +161,7 @@ export default function App(){
         }
         @media (max-width:1000px){
           .nav-menu{
-            grid-template-columns: repeat(5, minmax(120px, 1fr)); /* un pelo más angosto */
+            grid-template-columns: repeat(5, minmax(120px, 1fr));
             column-gap:28px;
             font-size:21px;
           }
@@ -155,12 +169,12 @@ export default function App(){
         @media (max-width:880px){
           .nav-inner{ grid-template-columns:1fr; padding:12px 0 18px; gap:16px; }
           .nav-menu{
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* 2–3 columnas */
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             column-gap:24px; row-gap:10px;
             font-size:20px;
           }
-          .nav-menu a{ max-width:none; } /* que se adapte libremente en móvil */
-          .nav-menu a[aria-current="page"]::after{ bottom:2px; }
+          .nav-menu a{ max-width:none; min-height:58px; padding-bottom:18px; }
+          .nav-menu a[aria-current="page"]::after{ bottom:6px; }
 
           .info-inner{ grid-template-columns:1fr; gap:24px; }
           .social-col{ justify-self:center; }
