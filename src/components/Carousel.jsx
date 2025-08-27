@@ -28,35 +28,55 @@ export default function Carousel({ items = [], interval = 5000, onClickSlide }) 
   return (
     <div className="carousel" role="region" aria-roledescription="carrusel" aria-label="Noticias destacadas">
       <style>{`
+        body{ overflow-x:hidden; }
+
         .carousel{
-          --arrow-size:72px; --arrow-icon:34px;
-          position:relative; overflow:hidden; background:#f6f6f6;
-          width:100%; min-height:60vh; max-height:720px; /* hero grande */
-        }
-        .carousel-track{ display:flex; height:100%; transition: transform .55s ease; }
-        .carousel-slide{ min-width:100%; position:relative; cursor:pointer; outline:none; height:100%; }
-        .carousel-slide img{
-          width:100%; height:100%; object-fit:cover; display:block;
+          width:100%;
+          margin:0 auto;
+          position:relative;
+          overflow:hidden;
+          border-radius:16px;
+          background:#f6f6f6;
+
+          /* 📐 Más ALTO en desktop, sin cambiar el ancho */
+          aspect-ratio: 4 / 3;      /* más alto que 16/9 y 3/2 */
+          max-height: 820px;
+
+          /* tamaños de flechas */
+          --arrow-size:72px;
+          --arrow-icon:34px;
+
+          /* margen lateral para que el caption no toque las flechas */
+          --edge-gap: calc(var(--arrow-size) + 20px);
         }
 
-        /* caption centrado, más grande en hero */
+        .carousel-track{ display:flex; height:100%; transition: transform .55s ease; }
+        .carousel-slide{ min-width:100%; position:relative; height:100%; outline:none; cursor:pointer; }
+        .carousel-slide img{ width:100%; height:100%; object-fit:cover; object-position:center; display:block; }
+
+        /* ===== Caption (con margen lateral dinámico) ===== */
         .carousel-caption{
-          position:absolute; left:50%; transform:translateX(-50%); bottom:28px;
-          width:min(1000px, calc(100% - 40px));
+          position:absolute; left:50%; transform:translateX(-50%); bottom:24px;
+          width: calc(100% - (var(--edge-gap) * 2));  /* 👈 evita cruce con flechas */
+          max-width:100%;
           background:#fff; border-radius:16px;
-          padding:22px 96px 22px 22px;
-          box-shadow:0 16px 36px rgba(0,0,0,.22); text-align:center; z-index:2;
+          padding:26px 40px;
+          box-shadow:0 16px 36px rgba(0,0,0,.22);
+          text-align:center; z-index:2;
         }
         .carousel-caption .title{
-          margin:0 0 6px; font-family:'Agelia', system-ui, sans-serif;
-          font-size: clamp(24px, 3vw, 36px); line-height:1.1; color:#0f0f0f;
+          margin:0 0 8px; font-family:'Agelia', system-ui, sans-serif;
+          font-size: clamp(26px, 3.2vw, 42px); line-height:1.1;
         }
         .carousel-caption .sub{
           margin:0; font-family:'Cobbler Sans', system-ui, sans-serif;
           font-size: clamp(13px, 1.6vw, 16px); line-height:1.35; color:#222; opacity:.92;
         }
-        .carousel-caption .heart{ position:absolute; top:-14px; right:-14px; width:72px; height:auto; pointer-events:none; }
+        .carousel-caption .heart{
+          position:absolute; top:-14px; right:-14px; width:72px; height:auto; pointer-events:none;
+        }
 
+        /* Flechas */
         .carousel-btn{
           position:absolute; top:50%; transform:translateY(-50%);
           width:var(--arrow-size); height:var(--arrow-size);
@@ -66,17 +86,45 @@ export default function Carousel({ items = [], interval = 5000, onClickSlide }) 
           cursor:pointer; user-select:none; backdrop-filter: blur(2px);
           transition: background .2s ease, transform .12s ease; z-index:3;
         }
-        .carousel-btn:hover, .carousel-btn:focus-visible{ background:rgba(255,255,255,.65); transform:translateY(-50%) scale(1.06); outline:none; }
+        .carousel-btn:hover, .carousel-btn:focus-visible{ background:rgba(255,255,255,.65); transform:translateY(-50%) scale(1.06); }
         .carousel-btn:active{ transform:translateY(-50%) scale(.98); }
         .carousel-btn.prev{ left:14px; } .carousel-btn.next{ right:14px; }
         .carousel-btn svg{ width:var(--arrow-icon); height:var(--arrow-icon); display:block; }
 
-        @media (max-width: 780px){
-          .carousel{ min-height:50vh; }
-          .carousel-caption{ bottom:12px; width:calc(100% - 24px); padding-right:86px; }
-          .carousel-caption .heart{ width:58px; top:-10px; right:-10px; }
-          .carousel{ --arrow-size:56px; --arrow-icon:26px; }
+        /* ===== Muy ancho (aún más alto si quieres) ===== */
+        @media (min-width:1200px){
+          .carousel{ aspect-ratio: 5 / 4; }   /* más alto todavía */
+        }
+
+        /* ===== Tablet ===== */
+        @media (max-width: 900px){
+          .carousel{ aspect-ratio: 4 / 3; --arrow-size:60px; --arrow-icon:28px; --edge-gap: calc(var(--arrow-size) + 16px); }
+          .carousel-caption{ bottom:18px; padding:18px 22px; }
+          .carousel-caption .heart{ width:62px; top:-10px; right:-10px; }
+        }
+
+        /* ===== Móvil ===== */
+        @media (max-width: 520px){
+          .carousel{
+            aspect-ratio: 5 / 6; max-height: 62vh;
+            --arrow-size:48px; --arrow-icon:22px; --edge-gap: calc(var(--arrow-size) + 12px);
+          }
+          .carousel-caption{
+            bottom:10px; width: calc(100% - (var(--edge-gap) * 2));
+            padding:12px 14px; border-radius:14px; box-shadow:0 10px 26px rgba(0,0,0,.18);
+          }
+          .carousel-caption .title{ font-size: clamp(18px, 5.2vw, 24px); }
+          .carousel-caption .sub{
+            font-size: clamp(12px, 3.6vw, 14px);
+            display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden;
+          }
+          .carousel-caption .heart{ width:48px; top:-8px; right:-8px; }
           .carousel-btn.prev{ left:8px; } .carousel-btn.next{ right:8px; }
+        }
+
+        @media (max-width: 380px){
+          .carousel{ aspect-ratio: 1 / 1; max-height: 64vh; }
+          .carousel-caption .sub{ -webkit-line-clamp:2; }
         }
       `}</style>
 
@@ -100,18 +148,14 @@ export default function Carousel({ items = [], interval = 5000, onClickSlide }) 
               <img
                 src={src}
                 alt={it.title || 'Imagen de noticia'}
-                loading="eager"      /* prioridad al hero */
+                loading="eager"
                 decoding="async"
                 onError={(e)=>{ e.currentTarget.src='/images/placeholder.jpg' }}
               />
               <div className="carousel-caption">
                 <div className="title">{it.title}</div>
                 {!!it.excerpt && <p className="sub">{it.excerpt}</p>}
-                <img
-                  className="heart"
-                  src="/ilustraciones/Ilustraciones_Mesa de trabajo 1 copia 2.png"
-                  alt="" aria-hidden="true"
-                />
+                <img className="heart" src="/ilustraciones/Ilustraciones_Mesa de trabajo 1 copia 2.png" alt="" aria-hidden="true" />
               </div>
             </div>
           )
@@ -120,25 +164,11 @@ export default function Carousel({ items = [], interval = 5000, onClickSlide }) 
 
       {items.length > 1 && (
         <>
-          <button
-            type="button"
-            className="carousel-btn prev"
-            aria-label="Anterior"
-            onClick={() => goto(index - 1)}
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+          <button type="button" className="carousel-btn prev" aria-label="Anterior" onClick={() => goto(index - 1)}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
-          <button
-            type="button"
-            className="carousel-btn next"
-            aria-label="Siguiente"
-            onClick={() => goto(index + 1)}
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+          <button type="button" className="carousel-btn next" aria-label="Siguiente" onClick={() => goto(index + 1)}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
         </>
       )}
