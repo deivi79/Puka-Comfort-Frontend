@@ -70,12 +70,13 @@ export default function Home(){
             <div className="container info-band__inner">
               <img
                 className="purpose__img"
-                src="/images/nuestra-mision.webp"
+                src="/images/nuestro-compromiso 2.jpg"
                 alt="Niñas participantes"
                 loading="lazy"
                 decoding="async"
-                onError={(e)=>{e.currentTarget.src='/images/placeholder.jpg'}}
+                onError={(e)=>{e.currentTarget.src='/images/nuestro-compromiso.jpg'}}
               />
+
               <div className="purpose__card">
                 <h2 className="purpose__title">Nuestro propósito</h2>
                 <p>

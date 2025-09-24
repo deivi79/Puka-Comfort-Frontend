@@ -133,7 +133,7 @@ export default function NuestroTrabajo(){
             {/* Imagen */}
             <Reveal className="nt-what-image" delay={60}>
               {/* Coloca las imágenes en public/images/ y referencia como /images/... */}
-              <img src="/images/chica-estudiante.jpg" alt="Niña en escuela" loading="lazy" decoding="async" />
+              <img src="/images/que-hacemos.JPG" alt="Niña en escuela" loading="lazy" decoding="async" />
             </Reveal>
 
           </div>
@@ -148,7 +148,7 @@ export default function NuestroTrabajo(){
           <ul className="nt-work-list">
             <Reveal as="li" className="nt-work-item" delay={60}>
               <figure className="nt-figure">
-                <img src="/images/charla.jpg" alt="Charlas informativas" />
+                <img src="/images/charlas-informativas.JPG" alt="Charlas informativas" />
               </figure>
               <figcaption className="nt-caption">
                 <strong>Charlas informativas</strong>
