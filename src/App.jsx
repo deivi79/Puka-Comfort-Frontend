@@ -244,11 +244,11 @@ export default function App(){
             <p><strong>Comunícate con nosotros</strong></p>
             <p>Correo general: <a href="mailto:pukacomfort@gmail.com">pukacomfort@gmail.com</a></p>
             <p>De lunes a viernes de 9 am a 7:30 pm y los sábados de 9 am a 2:30 pm.</p><br/>
-            <p>Si eres empresa y deseas hacer una alianza escríbenos a 
-              <a href="mailto:pukacomfort@gmail.com">pukacomfort@gmail.com</a>
+            <p>Si eres empresa y deseas hacer una alianza escríbenos a  
+              <a href="mailto:pukacomfort@gmail.com"> pukacomfort@gmail.com</a>
             </p>
             <p>Si tienes alguna observación escríbenos a 
-              <a href="mailto:pukacomfort@gmail.com">pukacomfort@gmail.com</a>
+              <a href="mailto:pukacomfort@gmail.com"> pukacomfort@gmail.com</a>
             </p>
           </div>
 
@@ -257,10 +257,10 @@ export default function App(){
             <a href="https://www.tiktok.com/@TU_USUARIO" target="_blank" rel="noopener noreferrer">
               <img src="/icons/tiktok.png" alt="TikTok" />
             </a>
-            <a href="https://www.instagram.com/TU_USUARIO" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.instagram.com/pukacomfort/" target="_blank" rel="noopener noreferrer">
               <img src="/icons/instagram.png" alt="Instagram" />
             </a>
-            <a href="https://www.linkedin.com/in/TU_USUARIO" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.linkedin.com/company/puka-comfort" target="_blank" rel="noopener noreferrer">
               <img src="/icons/linkedin.png" alt="LinkedIn" />
             </a>
           </aside>
