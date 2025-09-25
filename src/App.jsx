@@ -8,6 +8,7 @@ import Tienda from './pages/Tienda';
 import Convocatoria from './pages/Convocatoria';
 import NoticiasList from './pages/NoticiasList';
 import NoticiaDetalle from './pages/NoticiaDetalle';
+import ScrollToTop from './components/ScrollToTop';
 
 export default function App(){
   const nav = useNavigate();
@@ -17,6 +18,7 @@ export default function App(){
 
   return (
     <div>
+      <ScrollToTop />
       <style>{`
         /* ===== Tipografías ===== */
         @font-face{
