@@ -35,96 +35,83 @@ export default function Carousel({ items = [], interval = 5000, onClickSlide }) 
           margin:0 auto;
           position:relative;
           overflow:hidden;
-          border-radius:16px;
+          border-radius:10px;
           background:#f6f6f6;
 
-          /* 📐 Más ALTO en desktop, sin cambiar el ancho */
-          aspect-ratio: 4 / 3;      /* más alto que 16/9 y 3/2 */
-          max-height: 820px;
+          /* 🚀 Más alto */
+          height:80vh;
+          max-height:960px;
 
-          /* tamaños de flechas */
-          --arrow-size:72px;
-          --arrow-icon:34px;
-
-          /* margen lateral para que el caption no toque las flechas */
-          --edge-gap: calc(var(--arrow-size) + 20px);
+          --arrow-size:80px;
+          --arrow-icon:38px;
+          --edge-gap: calc(var(--arrow-size) + 24px);
         }
 
         .carousel-track{ display:flex; height:100%; transition: transform .55s ease; }
         .carousel-slide{ min-width:100%; position:relative; height:100%; outline:none; cursor:pointer; }
         .carousel-slide img{ width:100%; height:100%; object-fit:cover; object-position:center; display:block; }
 
-        /* ===== Caption (con margen lateral dinámico) ===== */
         .carousel-caption{
-          position:absolute; left:50%; transform:translateX(-50%); bottom:24px;
-          width: calc(100% - (var(--edge-gap) * 2));  /* 👈 evita cruce con flechas */
-          max-width:100%;
-          background:#fff; border-radius:16px;
-          padding:26px 40px;
-          box-shadow:0 16px 36px rgba(0,0,0,.22);
+          position:absolute; left:50%; transform:translateX(-50%); bottom:32px;
+          width: calc(100% - (var(--edge-gap) * 2));
+          background: rgba(255,255,255,0.85);
+          backdrop-filter: blur(6px);
+          border-radius:20px;
+          padding:32px 44px;
+          box-shadow:0 16px 42px rgba(0,0,0,.25);
           text-align:center; z-index:2;
         }
         .carousel-caption .title{
-          margin:0 0 8px; font-family:'Agelia', system-ui, sans-serif;
-          font-size: clamp(26px, 3.2vw, 42px); line-height:1.1;
+          margin:0 0 12px;
+          font-family:'Agelia', system-ui, sans-serif;  /* ✅ Fuente personalizada */
+          font-size: clamp(30px, 3.8vw, 46px);
+          line-height:1.15;
+          color:#222;
         }
         .carousel-caption .sub{
-          margin:0; font-family:'Cobbler Sans', system-ui, sans-serif;
-          font-size: clamp(13px, 1.6vw, 16px); line-height:1.35; color:#222; opacity:.92;
+          margin:0;
+          font-size: clamp(14px, 1.6vw, 18px);
+          line-height:1.4; color:#333;
+          opacity:.95;
         }
         .carousel-caption .heart{
-          position:absolute; top:-14px; right:-14px; width:72px; height:auto; pointer-events:none;
+          position:absolute; top:-16px; right:-16px; width:78px; height:auto; pointer-events:none;
         }
 
-        /* Flechas */
         .carousel-btn{
           position:absolute; top:50%; transform:translateY(-50%);
           width:var(--arrow-size); height:var(--arrow-size);
-          border:0; border-radius:50%; background:rgba(255,255,255,.28); color:#111;
+          border:0; border-radius:50%;
+          background:linear-gradient(145deg,#fff,#f1f1f1);
+          color:#111;
           display:flex; align-items:center; justify-content:center;
-          box-shadow:0 4px 14px rgba(0,0,0,.18);
+          box-shadow:0 6px 16px rgba(0,0,0,.2);
           cursor:pointer; user-select:none; backdrop-filter: blur(2px);
-          transition: background .2s ease, transform .12s ease; z-index:3;
+          transition: all .25s ease; z-index:3;
         }
-        .carousel-btn:hover, .carousel-btn:focus-visible{ background:rgba(255,255,255,.65); transform:translateY(-50%) scale(1.06); }
-        .carousel-btn:active{ transform:translateY(-50%) scale(.98); }
-        .carousel-btn.prev{ left:14px; } .carousel-btn.next{ right:14px; }
+        .carousel-btn:hover, .carousel-btn:focus-visible{
+          background:linear-gradient(145deg,#fff,#e6e6e6);
+          transform:translateY(-50%) scale(1.08);
+        }
+        .carousel-btn:active{ transform:translateY(-50%) scale(.96); }
+        .carousel-btn.prev{ left:18px; }
+        .carousel-btn.next{ right:18px; }
         .carousel-btn svg{ width:var(--arrow-icon); height:var(--arrow-icon); display:block; }
 
-        /* ===== Muy ancho (aún más alto si quieres) ===== */
-        @media (min-width:1200px){
-          .carousel{ aspect-ratio: 5 / 4; }   /* más alto todavía */
-        }
-
-        /* ===== Tablet ===== */
+        /* ===== Responsive ===== */
         @media (max-width: 900px){
-          .carousel{ aspect-ratio: 4 / 3; --arrow-size:60px; --arrow-icon:28px; --edge-gap: calc(var(--arrow-size) + 16px); }
-          .carousel-caption{ bottom:18px; padding:18px 22px; }
-          .carousel-caption .heart{ width:62px; top:-10px; right:-10px; }
+          .carousel{ height:70vh; }
         }
-
-        /* ===== Móvil ===== */
         @media (max-width: 520px){
-          .carousel{
-            aspect-ratio: 5 / 6; max-height: 62vh;
-            --arrow-size:48px; --arrow-icon:22px; --edge-gap: calc(var(--arrow-size) + 12px);
-          }
-          .carousel-caption{
-            bottom:10px; width: calc(100% - (var(--edge-gap) * 2));
-            padding:12px 14px; border-radius:14px; box-shadow:0 10px 26px rgba(0,0,0,.18);
-          }
-          .carousel-caption .title{ font-size: clamp(18px, 5.2vw, 24px); }
+          .carousel{ height:60vh; }
+          .carousel-caption{ padding:14px 16px; border-radius:14px; bottom:10px; }
+          .carousel-caption .title{ font-size: clamp(18px, 5vw, 24px); }
           .carousel-caption .sub{
             font-size: clamp(12px, 3.6vw, 14px);
             display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden;
           }
           .carousel-caption .heart{ width:48px; top:-8px; right:-8px; }
           .carousel-btn.prev{ left:8px; } .carousel-btn.next{ right:8px; }
-        }
-
-        @media (max-width: 380px){
-          .carousel{ aspect-ratio: 1 / 1; max-height: 64vh; }
-          .carousel-caption .sub{ -webkit-line-clamp:2; }
         }
       `}</style>
 

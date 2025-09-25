@@ -70,7 +70,7 @@ export default function Home(){
             <div className="container info-band__inner">
               <img
                 className="purpose__img"
-                src="/images/nuestro-compromiso 2.jpg"
+                src="/images/nuestro-compromiso 3.jpg"
                 alt="Niñas participantes"
                 loading="lazy"
                 decoding="async"

@@ -156,13 +156,14 @@ export default function App(){
 
         /* A la derecha y en columna */
         .social-col{
-          justify-self:end;
-          text-align:right;
+          justify-self:center;   /* centrar dentro de la grid */
+          text-align:center;     /* texto centrado */
           display:flex;
           flex-direction:column;
-          align-items:flex-end;
+          align-items:center;    /* centra los íconos */
           gap:12px;
         }
+
         .social-title{ font-family:'Cobbler Sans',system-ui,sans-serif; font-size:16px; margin:0 0 6px; }
         .social-col img{ width:52px; height:52px; display:block; }
 
@@ -242,14 +243,10 @@ export default function App(){
         <div className="container info-inner">
           <div className="info-text">
             <p><strong>Comunícate con nosotros</strong></p>
-            <p>Correo general: <a href="mailto:pukacomfort@gmail.com">pukacomfort@gmail.com</a></p>
+            <p>Correo general: <a href="mailto:pukacomfort@gmail.com">pukacomfort@outlook.com</a></p>
             <p>De lunes a viernes de 9 am a 7:30 pm y los sábados de 9 am a 2:30 pm.</p><br/>
-            <p>Si eres empresa y deseas hacer una alianza escríbenos a  
-              <a href="mailto:pukacomfort@gmail.com"> pukacomfort@gmail.com</a>
-            </p>
-            <p>Si tienes alguna observación escríbenos a 
-              <a href="mailto:pukacomfort@gmail.com"> pukacomfort@gmail.com</a>
-            </p>
+            <p>Si eres empresa y deseas hacer una alianza escríbenos a <a href="mailto:pukacomfort@gmail.com">pukacomfort@outlook.com</a></p>
+            <p>Si tienes alguna observación escríbenos a <a href="mailto:pukacomfort@gmail.com">pukacomfort@outlook.com</a></p>
           </div>
 
           <aside className="social-col">
