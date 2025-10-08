@@ -38,8 +38,21 @@ export default function Home(){
     title: p.title ?? '',
     excerpt: p.excerpt ?? '',
     hero_image: absUrl(p.hero_image || p.cover_image || p.image || p.thumbnail) || fallbackImg,
-    cover_image: absUrl(p.cover_image || p.hero_image || p.image || p.thumbnail) || fallbackImg
+    cover_image: absUrl(p.cover_image || p.hero_image || p.image || p.thumbnail) || fallbackImg,
+
+    // 👇 Añadimos autor y categoría
+    author: {
+      name: p.author?.name ?? 'Puka Comfort',
+      position: p.author?.position ?? '',
+      photo: absUrl(p.author?.photo ?? ''),
+    },
+    category: {
+      name: p.category?.name ?? 'General',
+      slug: p.category?.slug ?? '',
+    },
+    published_at: p.published_at ?? null,
   }))
+
 
   return (
     <>
