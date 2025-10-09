@@ -76,32 +76,68 @@ export default function NoticiaDetalle() {
           font-size: 22px;
           margin: 32px 0 14px;
         }
+
+        /* ===== Autor ===== */
         .news-author {
           display: flex;
-          align-items: center;
-          margin-top: 28px;
-          gap: 14px;
+          align-items: flex-start;
+          gap: 18px;
           border-top: 1px solid #eee;
-          padding-top: 20px;
+          padding-top: 24px;
+          margin-top: 36px;
+          background: #fff;
+          border-radius: 12px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+          padding: 20px;
         }
         .news-author img {
-          width: 64px;
-          height: 64px;
+          width: 80px;
+          height: 80px;
           border-radius: 50%;
           object-fit: cover;
+          border: 2px solid #f2f2f2;
+          flex-shrink: 0;
         }
         .news-author-info {
-          line-height: 1.4;
+          flex: 1;
+          line-height: 1.5;
         }
         .news-author-info strong {
           display: block;
-          font-size: 17px;
+          font-size: 18px;
           color: #c40050;
         }
         .news-author-info span {
+          display: block;
           font-size: 15px;
           color: #777;
+          margin-bottom: 4px;
         }
+        .news-author-bio {
+          font-size: 15px;
+          color: #555;
+          margin-top: 6px;
+          text-align: justify;
+        }
+        .news-author-links {
+          margin-top: 10px;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+        .news-author-links a {
+          font-size: 14px;
+          color: #c40050;
+          text-decoration: none;
+          font-weight: 500;
+          transition: color 0.2s ease;
+        }
+        .news-author-links a:hover {
+          color: #9a0040;
+          text-decoration: underline;
+        }
+
+        /* ===== Imagen final ===== */
         .news-end {
           margin-top: 40px;
           text-align: center;
@@ -127,15 +163,17 @@ export default function NoticiaDetalle() {
       {/* Cabecera */}
       <section className="news-header">
         {post.category && (
-          <div style={{
-            display: 'inline-block',
-            padding: '4px 12px',
-            backgroundColor: '#fde7ef',
-            color: '#c40050',
-            borderRadius: '8px',
-            fontSize: '14px',
-            marginBottom: '8px'
-          }}>
+          <div
+            style={{
+              display: 'inline-block',
+              padding: '4px 12px',
+              backgroundColor: '#fde7ef',
+              color: '#c40050',
+              borderRadius: '8px',
+              fontSize: '14px',
+              marginBottom: '8px'
+            }}
+          >
             {post.category.name}
           </div>
         )}
@@ -143,7 +181,8 @@ export default function NoticiaDetalle() {
         <div className="news-meta">
           {post.published_at && (
             <span>
-              🗓️ {new Date(post.published_at).toLocaleDateString('es-PE', {
+              🗓️{' '}
+              {new Date(post.published_at).toLocaleDateString('es-PE', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
@@ -160,12 +199,77 @@ export default function NoticiaDetalle() {
         {/* Autor */}
         {post.author && (
           <div className="news-author">
+            {/* Foto del autor */}
             {post.author.photo && (
               <img src={absUrl(post.author.photo)} alt={post.author.name} />
             )}
+
+            {/* Información del autor */}
             <div className="news-author-info">
               <strong>{post.author.name}</strong>
-              {post.author.position && <span>{post.author.position}</span>}
+              {post.author.position && (
+                <span>{post.author.position}</span>
+              )}
+
+              {/* Biografía o descripción */}
+              {post.author.bio && (
+                <p className="news-author-bio">{post.author.bio}</p>
+              )}
+
+              {/* Redes sociales */}
+              {(post.author.linkedin ||
+                post.author.twitter ||
+                post.author.instagram ||
+                post.author.facebook ||
+                post.author.website) && (
+                <div className="news-author-links">
+                  {post.author.website && (
+                    <a
+                      href={post.author.website}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      🌐 Sitio web
+                    </a>
+                  )}
+                  {post.author.linkedin && (
+                    <a
+                      href={post.author.linkedin}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      💼 LinkedIn
+                    </a>
+                  )}
+                  {post.author.instagram && (
+                    <a
+                      href={post.author.instagram}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      📸 Instagram
+                    </a>
+                  )}
+                  {post.author.twitter && (
+                    <a
+                      href={post.author.twitter}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      🐦 Twitter
+                    </a>
+                  )}
+                  {post.author.facebook && (
+                    <a
+                      href={post.author.facebook}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      👍 Facebook
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}
