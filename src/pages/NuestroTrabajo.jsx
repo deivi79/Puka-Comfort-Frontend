@@ -11,20 +11,18 @@ export default function NuestroTrabajo(){
         .nt-what{ padding: 48px 0 28px; }
         .nt-what-wrap{
           display:grid;
-          grid-template-columns: 1fr 1fr;   /* tarjeta | imagen */
+          grid-template-columns: 1fr 1fr;
           gap:28px;
-          align-items: stretch;             /* <- estira ambas columnas a la misma altura */
-          min-height: 420px;                /* alto mínimo cómodo del bloque */
+          align-items: stretch;
+          min-height: 420px;
         }
 
-        /* Tarjeta (mismo alto que la imagen) */
+        /* Tarjeta */
         .nt-what-card{
           background:#ececec;
           border-radius:14px;
           box-shadow:0 10px 28px rgba(0,0,0,.12);
           padding:28px 32px;
-
-          /* alturas iguales + centrado del contenido */
           height:100%;
           display:flex;
           flex-direction:column;
@@ -38,33 +36,33 @@ export default function NuestroTrabajo(){
         .nt-what-desc{
           font-family:'Cobbler Sans', system-ui, sans-serif;
           font-size:18px; color:#444; margin:0;
-          text-align:justify;                  /* texto justificado */
+          text-align:justify;
         }
         .nt-what-list{ margin:12px 0 0; padding-left:18px; }
         .nt-what-list li{ margin:6px 0; text-align:justify; }
 
-        /* Imagen (mismo alto que la tarjeta) */
+        /* Imagen */
         .nt-what-image{
           border-radius:14px; overflow:hidden;
           box-shadow:0 14px 36px rgba(0,0,0,.10);
-          height:100%;                         /* <- iguala altura a la del grid */
+          height:100%;
         }
         .nt-what-image img{
           display:block; width:100%; height:100%;
           object-fit:cover; object-position:center;
         }
 
-        /* ===== Nuestro trabajo (banda con 3 círculos) ===== */
+        /* ===== Nuestro trabajo (banda con patrón tenue) ===== */
         .nt-work-band{
           --pattern-size: 240px;
           background-color:#ececec;
           background-image:
-            radial-gradient(transparent 62%, rgba(0,0,0,0.03) 62%),
-            linear-gradient(rgba(236,236,236,.85), rgba(236,236,236,.85)),
-            url('/assets/ilustraciones/Ilustraciones-08.png');
-          background-repeat:no-repeat, no-repeat, repeat;
-          background-position:center top, 0 0, 0 0;
-          background-size:100% 100%, 100% 100%, var(--pattern-size) auto;
+            /* capa semitransparente encima del patrón */
+            linear-gradient(rgba(236,236,236,0.65), rgba(236,236,236,0.65)),
+            url('/ilustraciones/Ilustraciones-10.png');
+          background-repeat:no-repeat, repeat;
+          background-position:center top, 0 0;
+          background-size:100% 100%, var(--pattern-size) auto;
           padding:36px 0 48px;
           border-top:1px solid #eee;
         }
@@ -98,11 +96,11 @@ export default function NuestroTrabajo(){
         }
         @media (max-width:900px){
           .nt-what-wrap{
-            grid-template-columns:1fr;         /* apila tarjeta e imagen */
+            grid-template-columns:1fr;
             gap:16px; min-height:unset;
           }
-          .nt-what-card{ height:auto; }        /* deja de forzar igual altura */
-          .nt-what-image{ height:320px; }      /* alto razonable en móvil */
+          .nt-what-card{ height:auto; }
+          .nt-what-image{ height:320px; }
         }
         @media (max-width:880px){
           .nt-work-band{ --pattern-size:180px; }
@@ -117,7 +115,6 @@ export default function NuestroTrabajo(){
         <div className="nt-container">
           <div className="nt-what-wrap">
 
-            {/* Tarjeta (mismo alto que la imagen) */}
             <Reveal className="nt-what-card" delay={20}>
               <h2 className="nt-what-title">¿Qué hacemos?</h2>
               <p className="nt-what-desc">
@@ -130,9 +127,7 @@ export default function NuestroTrabajo(){
               </ul>
             </Reveal>
 
-            {/* Imagen */}
             <Reveal className="nt-what-image" delay={60}>
-              {/* Coloca las imágenes en public/images/ y referencia como /images/... */}
               <img src="/images/que-hacemos.JPG" alt="Niña en escuela" loading="lazy" decoding="async" />
             </Reveal>
 
@@ -140,7 +135,7 @@ export default function NuestroTrabajo(){
         </div>
       </section>
 
-      {/* ===== Nuestro trabajo (3 círculos) ===== */}
+      {/* ===== Nuestro trabajo ===== */}
       <section className="nt-work-band">
         <div className="nt-container">
           <Reveal as="h2" className="nt-work-title">Nuestro trabajo</Reveal>

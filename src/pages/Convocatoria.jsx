@@ -17,7 +17,6 @@ export default function Convocatoria(){
     return () => { mounted = false }
   }, [])
 
-  // ✅ imágenes de public/ se usan desde la raíz (SIN /public)
   const heroImg = '/images/voluntariado.jpg'
 
   const SKELE = {
@@ -31,6 +30,14 @@ export default function Convocatoria(){
     }
   }
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return ''
+    const d = new Date(dateStr)
+    return d.toLocaleDateString('es-PE', {
+      day: '2-digit', month: 'short', year: 'numeric'
+    })
+  }
+
   return (
     <main>
       <style>{`
@@ -39,10 +46,10 @@ export default function Convocatoria(){
           100% { background-position: -200% 0 }
         }
         .calls-wrap {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 24px;   /* ✅ mismo padding que Equipo.jsx */
-          }
+          max-width: 1100px;
+          margin: 0 auto;
+          padding: 24px;
+        }
         .calls-title{
           font-family:'Agelia', system-ui, sans-serif;
           font-size:36px; line-height:1.05; text-align:center;
@@ -67,16 +74,29 @@ export default function Convocatoria(){
           display:flex; align-items:center; justify-content:center; overflow:hidden;
         }
         .call-logoBox img{ max-width:100%; max-height:100%; object-fit:contain; display:block; }
+
         .call-btn{
           display:inline-block; margin:6px 0 12px; padding:8px 18px;
           border-radius:999px; background:#E9B21E; color:#000; font-weight:700;
           text-decoration:none; border:1px solid rgba(0,0,0,.15);
         }
         .call-btn:hover{ filter:brightness(.95); }
+
         .call-title{
           font-family:'Cobbler Sans', system-ui, sans-serif;
-          font-weight:700; color:#000; font-size:18px; line-height:1.25; margin:0;
+          font-weight:700; color:#000; font-size:18px; line-height:1.25; margin:6px 0;
         }
+
+        .call-desc{
+          font-size:15px; color:#555; max-width:320px;
+          margin:6px auto 10px; text-align:justify;
+        }
+
+        .call-dates{
+          font-size:14px; color:#666; margin-bottom:10px;
+          font-family:system-ui, sans-serif;
+        }
+
         .calls-note{ text-align:center; color:#444; margin-top:12px; }
 
         @media (max-width: 920px){
@@ -102,7 +122,11 @@ export default function Convocatoria(){
           <div className="calls-grid">
             {rows.map((c, i) => {
               const src = c.partner_logo || c.image
-              const img = src ? absUrl(src) : ''   // ✅ aplica helper siempre
+              const img = src ? absUrl(src) : ''
+              const desc = c.description || c.partner_name || ''
+              const start = formatDate(c.start_date)
+              const end = formatDate(c.end_date)
+
               return (
                 <Reveal key={c.id || c.slug || i} className="call-card" delay={70*i}>
                   <div className="call-logoBox">
@@ -120,6 +144,16 @@ export default function Convocatoria(){
                   )}
 
                   <h3 className="call-title">{c.title}</h3>
+
+                  {desc && <p className="call-desc">{desc}</p>}
+
+                  {(start || end) && (
+                    <p className="call-dates">
+                      {start && <span>Inicio: {start}</span>}
+                      {start && end && ' · '}
+                      {end && <span>Fin: {end}</span>}
+                    </p>
+                  )}
                 </Reveal>
               )
             })}
