@@ -106,12 +106,13 @@ export default function Carousel({ items = [], interval = 5000, onClickSlide }) 
         /* ===== Corazón decorativo ===== */
         .carousel-caption .heart{
           position:absolute;
-          top:-16px;
-          right:-16px;
-          width:78px;
+          top:-10px;
+          right:-10px;
+          width:60px;   /* 🔹 más pequeño que antes */
           height:auto;
           pointer-events:none;
           z-index:3;
+          transform: rotate(10deg); /* pequeño giro decorativo opcional */
         }
 
         /* ===== Botones laterales ===== */
@@ -139,7 +140,7 @@ export default function Carousel({ items = [], interval = 5000, onClickSlide }) 
         @media (max-width: 900px){
           .carousel{ height:70vh; }
           .carousel-caption{ bottom:28px; padding:22px 24px; }
-          .carousel-caption .heart{ width:60px; top:-10px; right:-10px; }
+          .carousel-caption .heart{ width:50px; top:-8px; right:-8px; }
         }
         @media (max-width: 520px){
           .carousel{ height:60vh; }
@@ -150,7 +151,7 @@ export default function Carousel({ items = [], interval = 5000, onClickSlide }) 
             display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden;
           }
           .carousel-meta{ flex-direction:column; gap:6px; font-size:13px; }
-          .carousel-caption .heart{ width:48px; top:-8px; right:-8px; }
+          .carousel-caption .heart{ width:40px; top:-6px; right:-6px; }
           .carousel-btn.prev{ left:8px; } .carousel-btn.next{ right:8px; }
         }
       `}</style>

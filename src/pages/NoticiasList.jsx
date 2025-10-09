@@ -17,7 +17,6 @@ export default function NoticiasList() {
   })
   const nav = useNavigate()
 
-  // 🔹 Cargar autores y categorías
   useEffect(() => {
     const fetchOptions = async () => {
       try {
@@ -34,7 +33,6 @@ export default function NoticiasList() {
     fetchOptions()
   }, [])
 
-  // 🔹 Cargar noticias según filtros
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -156,6 +154,8 @@ export default function NoticiasList() {
           flex-direction:column;
           gap:8px;
           flex:1;
+          justify-content:space-between;
+          text-align:center; /* 🔹 centramos el texto y el botón */
         }
 
         .news-meta {
@@ -180,8 +180,11 @@ export default function NoticiasList() {
         }
 
         .news-btn {
-          align-self:flex-start;
-          margin-top:auto;
+          margin-top:12px;
+          margin-left:auto;
+          margin-right:auto; /* 🔹 centra el botón horizontalmente */
+          display:inline-block;
+          align-self:center;
         }
 
         @media (max-width:820px){
