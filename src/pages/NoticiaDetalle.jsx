@@ -1,16 +1,49 @@
 import { useEffect, useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import { api } from '../api'
-import { useParams } from 'react-router-dom'
 import Reveal from '../components/Reveal'
 import { absUrl } from '../url'
 
 export default function NoticiaDetalle() {
   const { slug } = useParams()
   const [post, setPost] = useState(null)
+  const [error, setError] = useState(null)
+  const nav = useNavigate()
 
   useEffect(() => {
-    api(`/api/news/posts/${slug}/`).then(setPost)
+    let alive = true
+    ;(async () => {
+      try {
+        const res = await api('/api/news/articles/')
+        const list = Array.isArray(res)
+          ? res
+          : Array.isArray(res?.results)
+          ? res.results
+          : Array.isArray(res?.data)
+          ? res.data
+          : []
+
+        const found = list.find((a) => a.slug === slug)
+        if (!found) throw new Error('Artículo no encontrado')
+
+        const detail = await api(`/api/news/articles/id/${found.id}/`)
+        if (alive) setPost(detail)
+      } catch (err) {
+        if (alive) setError(err.message)
+      }
+    })()
+    return () => {
+      alive = false
+    }
   }, [slug])
+
+  if (error) {
+    return (
+      <main className="container py-5">
+        <p style={{ color: 'crimson' }}>⚠️ Error: {error}</p>
+      </main>
+    )
+  }
 
   if (!post) {
     return (
@@ -20,9 +53,19 @@ export default function NoticiaDetalle() {
     )
   }
 
+  const portada =
+    absUrl(post.imagen_principal || post.imagen_cover) || '/images/placeholder.jpg'
+
   return (
     <main className="news-container">
       <style>{`
+        @font-face {
+          font-family: 'Cobbler Sans';
+          src: url('/fonts/CobblerSansTest-Regular-BF67590d214469d.otf') format('opentype');
+          font-weight: normal;
+          font-style: normal;
+        }
+
         .news-container {
           max-width: 900px;
           margin: 0 auto;
@@ -31,138 +74,153 @@ export default function NoticiaDetalle() {
           line-height: 1.65;
           color: #2b2b2b;
         }
-        .news-header {
-          text-align: center;
-          margin-bottom: 24px;
-        }
+
+        .news-header { text-align: center; margin-bottom: 24px; }
         .news-header h1 {
           font-family: 'Agelia', serif;
           font-size: 36px;
           line-height: 1.1;
           margin-bottom: 12px;
         }
-        .news-meta {
-          font-size: 15px;
-          color: #666;
-          margin-bottom: 24px;
-        }
-        .news-meta span {
-          margin-right: 10px;
-        }
-        .news-hero {
-          width: 100%;
-          border-radius: 12px;
-          overflow: hidden;
-          margin: 0 auto 24px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
+
+        .news-meta { font-size: 15px; color: #666; margin-bottom: 24px; }
+
         .news-hero img {
           width: 100%;
-          height: auto;
-          display: block;
-          object-fit: cover;
+          border-radius: 12px;
+          margin-bottom: 28px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-        .news-content {
+
+        .news-content-box {
           background: #fff;
           border-radius: 12px;
-          padding: 24px 28px;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+          padding: 28px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+          margin-bottom: 32px;
         }
+
         .news-content p {
           margin-bottom: 18px;
           font-size: 17px;
+          font-family: 'Cobbler Sans', system-ui, sans-serif;
+          white-space: pre-line;
+          color: #333;
         }
-        .news-content h2 {
-          font-size: 22px;
-          margin: 32px 0 14px;
+        .news-content p.centrado { text-align: center; }
+        .news-content p.izquierda { text-align: left; }
+        .news-content p.derecha { text-align: right; }
+        .news-content p.negrita { font-weight: bold; }
+        .news-content p.cursiva { font-style: italic; }
+
+        .news-image {
+          text-align: center;
+          margin: 32px 0;
+        }
+        .news-image img {
+          max-width: 100%;
+          border-radius: 12px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .news-image span {
+          display: block;
+          font-size: 14px;
+          color: #777;
+          margin-top: 6px;
         }
 
-        /* ===== Autor ===== */
+        .news-video {
+          position: relative;
+          padding-bottom: 56.25%;
+          height: 0;
+          overflow: hidden;
+          margin: 32px 0;
+          border-radius: 12px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .news-video iframe {
+          position: absolute;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
+          border: 0;
+        }
+
+        /* ===== Autor (actualizado con fondo rosa) ===== */
         .news-author {
           display: flex;
           align-items: flex-start;
           gap: 18px;
           border-top: 1px solid #eee;
-          padding-top: 24px;
+          padding: 24px;
           margin-top: 36px;
-          background: #fff;
-          border-radius: 12px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-          padding: 20px;
+          background: #fde7ef;                /* 🎨 Fondo rosa */
+          border-radius: 16px;
+          box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
+
         .news-author img {
-          width: 80px;
-          height: 80px;
+          width: 90px;
+          height: 90px;
           border-radius: 50%;
           object-fit: cover;
-          border: 2px solid #f2f2f2;
+          border: 3px solid #f9c7cf;          /* Borde rosa suave */
           flex-shrink: 0;
         }
-        .news-author-info {
-          flex: 1;
-          line-height: 1.5;
-        }
+
+        .news-author-info { flex: 1; }
+
         .news-author-info strong {
           display: block;
-          font-size: 18px;
+          font-size: 19px;
           color: #c40050;
-        }
-        .news-author-info span {
-          display: block;
-          font-size: 15px;
-          color: #777;
-          margin-bottom: 4px;
-        }
-        .news-author-bio {
-          font-size: 15px;
-          color: #555;
-          margin-top: 6px;
-          text-align: justify;
-        }
-        .news-author-links {
-          margin-top: 10px;
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-        }
-        .news-author-links a {
-          font-size: 14px;
-          color: #c40050;
-          text-decoration: none;
-          font-weight: 500;
+          cursor: pointer;
           transition: color 0.2s ease;
         }
-        .news-author-links a:hover {
-          color: #9a0040;
+
+        .news-author-info strong:hover {
+          color: #a90045;
           text-decoration: underline;
         }
 
-        /* ===== Imagen final ===== */
-        .news-end {
-          margin-top: 40px;
-          text-align: center;
+        .news-author-info span {
+          font-size: 15px;
+          color: #555;
         }
-        .news-end img {
-          max-width: 100%;
-          border-radius: 12px;
-        }
-        .news-end-caption {
-          font-size: 14px;
-          color: #777;
+
+        .news-author-bio {
+          font-size: 15px;
+          color: #444;
           margin-top: 6px;
+          text-align: justify;
+        }
+
+        /* ===== Redes sociales del autor ===== */
+        .author-socials {
+          display: flex;
+          gap: 10px;
+          margin-top: 10px;
+        }
+
+        .author-socials img {
+          width: 28px;
+          height: 28px;
+          border-radius: 0;
+          transition: transform 0.2s ease;
+        }
+
+        .author-socials img:hover {
+          transform: scale(1.1);
         }
       `}</style>
 
-      {/* Imagen de portada */}
-      {post.hero_image && (
-        <Reveal className="news-hero">
-          <img src={absUrl(post.hero_image)} alt={post.title} />
-        </Reveal>
-      )}
+      {/* Imagen principal */}
+      <Reveal className="news-hero">
+        <img src={portada} alt={post.titulo} />
+      </Reveal>
 
       {/* Cabecera */}
       <section className="news-header">
-        {post.category && (
+        {post.categoria && (
           <div
             style={{
               display: 'inline-block',
@@ -174,15 +232,15 @@ export default function NoticiaDetalle() {
               marginBottom: '8px'
             }}
           >
-            {post.category.name}
+            {post.categoria.nombre}
           </div>
         )}
-        <Reveal as="h1">{post.title}</Reveal>
+        <Reveal as="h1">{post.titulo}</Reveal>
         <div className="news-meta">
-          {post.published_at && (
+          {post.fecha_publicacion && (
             <span>
               🗓️{' '}
-              {new Date(post.published_at).toLocaleDateString('es-PE', {
+              {new Date(post.fecha_publicacion).toLocaleDateString('es-PE', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
@@ -192,96 +250,85 @@ export default function NoticiaDetalle() {
         </div>
       </section>
 
-      {/* Cuerpo */}
-      <Reveal className="news-content" delay={80}>
-        <div dangerouslySetInnerHTML={{ __html: post.content }} />
-
-        {/* Autor */}
-        {post.author && (
-          <div className="news-author">
-            {/* Foto del autor */}
-            {post.author.photo && (
-              <img src={absUrl(post.author.photo)} alt={post.author.name} />
+      {/* Cuerpo del artículo */}
+      <Reveal className="news-content-box" delay={80}>
+        <div className="news-content">
+          {/* Párrafos */}
+          {post.parrafos
+            ?.sort((a, b) => a.orden - b.orden)
+            .map((p) =>
+              p.contenido
+                .replace(/\\n/g, '\n')
+                .split(/\n{2,}/)
+                .map((segment, i) => (
+                  <p
+                    key={`${p.id}-${i}`}
+                    className={[
+                      p.id_centrado,
+                      p.negrita ? 'negrita' : '',
+                      p.cursiva ? 'cursiva' : ''
+                    ].join(' ')}
+                  >
+                    {segment.trim()}
+                  </p>
+                ))
             )}
 
-            {/* Información del autor */}
-            <div className="news-author-info">
-              <strong>{post.author.name}</strong>
-              {post.author.position && (
-                <span>{post.author.position}</span>
-              )}
+          {/* Imágenes intercaladas */}
+          {post.imagenes?.map((img) => (
+            <div key={img.id} className="news-image">
+              <img src={absUrl(img.url)} alt={img.origen || 'Imagen del artículo'} />
+              {img.origen && <span>📸 {img.origen}</span>}
+            </div>
+          ))}
 
-              {/* Biografía o descripción */}
-              {post.author.bio && (
-                <p className="news-author-bio">{post.author.bio}</p>
-              )}
+          {/* Videos */}
+          {post.videos?.map((vid) => (
+            <div key={vid.id} className="news-video">
+              <iframe
+                src={vid.url.replace('watch?v=', 'embed/')}
+                title={vid.titulo}
+                allowFullScreen
+              ></iframe>
+            </div>
+          ))}
 
-              {/* Redes sociales */}
-              {(post.author.linkedin ||
-                post.author.twitter ||
-                post.author.instagram ||
-                post.author.facebook ||
-                post.author.website) && (
-                <div className="news-author-links">
-                  {post.author.website && (
-                    <a
-                      href={post.author.website}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      🌐 Sitio web
+          {/* Autor */}
+          {post.autor && (
+            <div className="news-author">
+              {post.autor.foto && (
+                <img src={absUrl(post.autor.foto)} alt={post.autor.nombre} />
+              )}
+              <div className="news-author-info">
+                <strong onClick={() => nav(`/autor/${post.autor.slug}`)}>
+                  {post.autor.nombre}
+                </strong>
+                {post.autor.cargo && <span>{post.autor.cargo}</span>}
+                {/*post.autor.bio && <p className="news-author-bio">{post.autor.bio}</p>*/}
+
+                {/* Redes sociales del autor */}
+                <div className="author-socials">
+                  {post.autor.linkedin && (
+                    <a href={post.autor.linkedin} target="_blank" rel="noopener noreferrer">
+                      <img src="/icons/linkedin.png" alt="LinkedIn" />
                     </a>
                   )}
-                  {post.author.linkedin && (
-                    <a
-                      href={post.author.linkedin}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      💼 LinkedIn
+                  {post.autor.instagram && (
+                    <a href={post.autor.instagram} target="_blank" rel="noopener noreferrer">
+                      <img src="/icons/instagram.png" alt="Instagram" />
                     </a>
                   )}
-                  {post.author.instagram && (
-                    <a
-                      href={post.author.instagram}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      📸 Instagram
-                    </a>
-                  )}
-                  {post.author.twitter && (
-                    <a
-                      href={post.author.twitter}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      🐦 Twitter
-                    </a>
-                  )}
-                  {post.author.facebook && (
-                    <a
-                      href={post.author.facebook}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      👍 Facebook
+                  {post.autor.twitter && (
+                    <a href={post.autor.twitter} target="_blank" rel="noopener noreferrer">
+                      <img src="/icons/twitter.png" alt="Twitter" />
                     </a>
                   )}
                 </div>
-              )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </Reveal>
-
-      {/* Imagen final */}
-      {post.end_image && (
-        <Reveal className="news-end" delay={120}>
-          <img src={absUrl(post.end_image)} alt="Imagen final" />
-          <p className="news-end-caption">Fotografía: Puka Comfort</p>
-        </Reveal>
-      )}
     </main>
   )
 }

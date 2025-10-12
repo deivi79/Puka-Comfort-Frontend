@@ -9,6 +9,7 @@ import Convocatoria from './pages/Convocatoria';
 import NoticiasList from './pages/NoticiasList';
 import NoticiaDetalle from './pages/NoticiaDetalle';
 import ScrollToTop from './components/ScrollToTop';
+import AutorPerfil from './pages/AutorPerfil'; 
 
 export default function App(){
   const nav = useNavigate();
@@ -230,7 +231,9 @@ export default function App(){
           <Route path="/convocatoria" element={<Convocatoria/>}/>
           <Route path="/noticias" element={<NoticiasList/>}/>
           <Route path="/noticias/:slug" element={<NoticiaDetalle/>}/>
+          <Route path="/autor/:slug" element={<AutorPerfil />} /> {/* ✅ ruta final */}
         </Routes>
+
       </main>
 
       <section className="info-band" id="donar">
@@ -253,7 +256,7 @@ export default function App(){
 
           <aside className="social-col">
             <p className="social-title">Nuestras redes sociales</p>
-            <a href="https://www.tiktok.com/@TU_USUARIO" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.tiktok.com/@pukacomfort?lang=es" target="_blank" rel="noopener noreferrer">
               <img src="/icons/tiktok.png" alt="TikTok" />
             </a>
             <a href="https://www.instagram.com/pukacomfort/" target="_blank" rel="noopener noreferrer">

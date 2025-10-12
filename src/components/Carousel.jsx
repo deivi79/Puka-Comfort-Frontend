@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 export default function Carousel({ items = [], interval = 5000, onClickSlide }) {
+  console.log('🧩 Carousel recibe:', items)
   const [index, setIndex] = useState(0)
   const timer = useRef(null)
   const hasItems = Array.isArray(items) && items.length > 0
@@ -162,7 +163,9 @@ export default function Carousel({ items = [], interval = 5000, onClickSlide }) 
         aria-live="polite"
       >
         {items.map((it, i) => {
-          const src = it.hero_image || it.cover_image || '/images/placeholder.jpg'
+          let src = it.hero_image || it.cover_image || '/images/placeholder.jpg'
+          if (src?.endsWith('?')) src = src.slice(0, -1) // limpiar el "?"
+
           const author = it.author?.name ?? 'Puka Comfort'
           const category = it.category?.name ?? 'General'
           const date = it.published_at
