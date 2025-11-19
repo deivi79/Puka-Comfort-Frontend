@@ -10,23 +10,29 @@ export default function NoticiaDetalle() {
   const [error, setError] = useState(null)
   const nav = useNavigate()
 
+  // ============================
+  // Cargar artículo
+  // ============================
   useEffect(() => {
     const ctrl = new AbortController()
+
     ;(async () => {
       try {
         setError(null)
         setPost(null)
 
-        // 1) Intento directo por slug
         let detail = null
+
+        // Intentar por slug directamente
         try {
           detail = await api(`/api/news/articles/slug/${encodeURIComponent(slug)}/`, {
             signal: ctrl.signal,
           })
         } catch {
-          // 2) Fallback: lista -> buscar -> detalle
+          // fallback: buscar por listado
           if (ctrl.signal.aborted) return
           const res = await api('/api/news/articles/', { signal: ctrl.signal })
+
           const list = Array.isArray(res)
             ? res
             : Array.isArray(res?.results)
@@ -34,39 +40,89 @@ export default function NoticiaDetalle() {
             : Array.isArray(res?.data)
             ? res.data
             : []
+
           const found = list.find(a => a.slug === slug)
           if (!found) throw new Error('Artículo no encontrado')
+
           detail = await api(`/api/news/articles/id/${found.id}/`, { signal: ctrl.signal })
         }
 
         if (!ctrl.signal.aborted) setPost(detail)
       } catch (err) {
-        if (!ctrl.signal.aborted) setError(err?.message || 'No se pudo cargar la noticia')
+        if (!ctrl.signal.aborted) {
+          setError(err?.message || 'No se pudo cargar la noticia')
+        }
       }
     })()
+
     return () => ctrl.abort()
   }, [slug])
 
-  // Párrafos procesados una sola vez
+  // ============================
+  // Ordenar contenido (párrafos + imágenes + videos)
+  // ============================
   const blocks = useMemo(() => {
-    if (!post?.parrafos) return []
-    return post.parrafos
-      .slice()
-      .sort((a, b) => a.orden - b.orden)
-      .flatMap(p =>
-        (p.contenido || '')
+    if (!post) return []
+
+    const items = []
+
+    // --- Párrafos ---
+    if (post.parrafos) {
+      post.parrafos.forEach(p => {
+        const segments = (p.contenido || '')
           .replace(/\\n/g, '\n')
           .split(/\n{2,}/)
-          .map((segment, i) => ({
-            key: `${p.id}-${i}`,
+          .map(t => t.trim())
+          .filter(Boolean)
+
+        segments.forEach((text, idx) => {
+          items.push({
+            type: 'paragraph',
+            orden: p.orden + idx * 0.01,
+            key: `p-${p.id}-${idx}`,
+            text,
             className: [
               p.id_centrado ? 'centrado' : '',
               p.negrita ? 'negrita' : '',
               p.cursiva ? 'cursiva' : '',
-            ].filter(Boolean).join(' '),
-            text: segment.trim(),
-          }))
-      )
+            ]
+              .filter(Boolean)
+              .join(' '),
+          })
+        })
+      })
+    }
+
+    // --- Imágenes ---
+    if (post.imagenes) {
+      post.imagenes.forEach(img => {
+        items.push({
+          type: 'image',
+          orden: img.orden,
+          key: `img-${img.id}`,
+          url: absUrl(img.url),
+          origen: img.origen,
+        })
+      })
+    }
+
+    // --- Videos ---
+    if (post.videos) {
+      post.videos.forEach(vid => {
+        const embed = vid.url.includes('watch?v=')
+          ? vid.url.replace('watch?v=', 'embed/')
+          : vid.url
+
+        items.push({
+          type: 'video',
+          orden: vid.orden,
+          key: `vid-${vid.id}`,
+          url: embed,
+        })
+      })
+    }
+
+    return items.sort((a, b) => a.orden - b.orden)
   }, [post])
 
   if (error) {
@@ -76,6 +132,7 @@ export default function NoticiaDetalle() {
       </main>
     )
   }
+
   if (!post) {
     return (
       <main className="container py-5">
@@ -84,25 +141,27 @@ export default function NoticiaDetalle() {
     )
   }
 
-  const portada = absUrl(post.imagen_principal || post.imagen_cover) || '/images/placeholder.jpg'
+  const portada = absUrl(post.imagen_principal || post.imagen_cover)
 
+  // ============================
+  // Render
+  // ============================
   return (
     <main className="news-container">
-      {/* Prioriza la imagen LCP */}
-      <link rel="preload" as="image" href={portada} imagesizes="100vw" />
-
       <style>{`
         :root{
           --radius:14px;
           --shadow:0 6px 18px rgba(0,0,0,.12);
-          --bg:#fff;           /* fondo general blanco */
-          --maxHero: 840px;    /* ancho del hero y del header */
-          --maxCard: 860px;    /* ancho de la tarjeta de contenido */
+          --bg:#fff;
+          --maxHero: 840px;
+          --maxCard: 860px;
         }
 
-        /* Fondo blanco en toda la vista */
-        body{ background: var(--bg); }
+        body{
+          background: var(--bg);
+        }
 
+        /* CONTENEDOR GENERAL */
         .news-container{
           max-width: 1200px;
           margin: 0 auto;
@@ -110,10 +169,10 @@ export default function NoticiaDetalle() {
           color:#2b2b2b;
           line-height:1.65;
           font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Cobbler Sans', sans-serif;
-          background: #fff; /* asegura lienzo blanco */
+          background:#fff;
         }
 
-        /* HERO pequeño, centrado, con sombra y bordes redondeados */
+        /* HERO */
         .news-hero{
           max-width: var(--maxHero);
           margin: 24px auto 14px;
@@ -121,20 +180,22 @@ export default function NoticiaDetalle() {
           overflow: hidden;
           box-shadow: var(--shadow);
         }
-        .news-hero picture,.news-hero img{ display:block; width:100%; height:auto; }
+
         .news-hero img{
-          aspect-ratio: 21/9;   /* mantiene proporciones */
+          width: 100%;
+          height: 260px; 
           object-fit: cover;
+          object-position: center;
           border-radius: var(--radius);
         }
 
-        /* Header con el mismo ancho del hero */
+        /* HEADER */
         .news-header{
           max-width: var(--maxHero);
           margin: 10px auto 8px;
           text-align: center;
-          padding: 0 8px;
         }
+
         .pill{
           display:inline-block;
           padding:6px 12px;
@@ -142,102 +203,146 @@ export default function NoticiaDetalle() {
           color:#c40050;
           border-radius:999px;
           font-size:14px;
-          margin: 10px auto 8px;
+          margin-bottom:10px;
         }
+
         .news-header h1{
           font-family:'Agelia', serif;
           font-weight:800;
-          font-size: clamp(22px, 3.2vw, 36px); /* ↓ menor en móvil y desktop */
-          line-height: 1.06;                   /* un pelín más compacto */
+          font-size: clamp(22px, 3.2vw, 36px);
+          line-height: 1.06;
           letter-spacing:-.02em;
           margin: 4px 0 8px;
         }
-        .news-meta{
-          display:flex; align-items:center; justify-content:center;
-          gap:8px; color:#6b6b6b; font-size:15px; margin-bottom: 10px;
-        }
-        .news-meta svg{ width:18px; height:18px; color:#5f73ff; flex-shrink:0; }
 
-        /* Tarjeta de contenido */
+        .news-meta{
+          display:flex;
+          gap:8px;
+          justify-content:center;
+          color:#6b6b6b;
+          font-size:15px;
+        }
+
+        /* TARJETA DE CONTENIDO */
         .news-card{
           max-width: var(--maxCard);
-          margin: 12px auto 0;
+          margin: 20px auto;
           background:#fff;
           border-radius: var(--radius);
           padding: 28px;
           box-shadow: 0 4px 14px rgba(0,0,0,.08);
         }
+
         .news-content p{
-          margin-bottom:18px; font-size:17px; color:#333; white-space: pre-line;
+          margin-bottom:18px;
+          font-size:17px;
+          white-space: pre-line;
+          color:#333;
         }
-        .news-content p.centrado{text-align:center;}
-        .news-content p.izquierda{text-align:left;}
-        .news-content p.derecha{text-align:right;}
-        .news-content p.negrita{font-weight:700;}
-        .news-content p.cursiva{font-style:italic;}
 
-        .news-image{ text-align:center; margin:32px 0; }
+        .centrado { text-align:center; }
+        .izquierda { text-align:left; }
+        .derecha { text-align:right; }
+        .negrita { font-weight:700; }
+        .cursiva { font-style:italic; }
+
+        /* IMÁGENES INTERMEDIAS */
+        .news-image{
+          margin: 30px 0;
+          text-align: center;
+        }
+
         .news-image img{
-          max-width:100%;
-          border-radius:12px;
-          box-shadow:0 2px 10px rgba(0,0,0,.1);
+          width: 70%;
+          max-width: 600px;
+          border-radius: 12px;
+          display: block;
+          margin: 0 auto;
+          box-shadow: 0 2px 10px rgba(0,0,0,.1);
         }
-        .news-image span{ display:block; font-size:14px; color:#777; margin-top:6px; }
 
+        .news-image-caption{
+          margin-top: 8px;
+          font-size: 14px;
+          color: #777;
+          text-align: center;
+        }
+
+        /* VIDEOS */
         .news-video{
-          position:relative; padding-bottom:56.25%; height:0;
-          overflow:hidden; margin:32px 0; border-radius:12px;
+          margin:32px 0;
+          position:relative;
+          padding-bottom:56.25%;
+          height:0;
+          border-radius:12px;
+          overflow:hidden;
           box-shadow:0 2px 10px rgba(0,0,0,.1);
         }
-        .news-video iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
-
-        /* Autor */
-        .news-author{
-          display:flex; gap:18px; align-items:flex-start;
-          border-top:1px solid #eee; padding:24px; margin-top:36px;
-          background:#fde7ef; border-radius:16px; box-shadow:0 3px 10px rgba(0,0,0,.1);
+        .news-video iframe{
+          position:absolute;
+          inset:0;
+          width:100%;
+          height:100%;
+          border:0;
         }
-        .news-author img{ width:90px; height:90px; border-radius:50%; object-fit:cover; border:3px solid #f9c7cf; }
-        .news-author-info{ flex:1; }
-        .news-author-info strong{ display:block; font-size:19px; color:#c40050; cursor:pointer; transition:color .2s; }
-        .news-author-info strong:hover{ color:#a90045; text-decoration:underline; }
-        .author-socials{ display:flex; gap:10px; margin-top:10px; }
-        .author-socials img{ width:28px; height:28px; }
 
-        @media (max-width: 900px){
-          :root{ --maxHero: 92vw; --maxCard: 94vw; }
-          .news-card{ padding:22px; }
+        /* AUTOR (ESTILO ORIGINAL) */
+        .news-author{
+          display:flex;
+          gap:18px;
+          align-items:flex-start;
+          border-top:1px solid #eee;
+          padding:24px;
+          margin-top:36px;
+          background:#fde7ef;
+          border-radius:16px;
+          box-shadow:0 3px 10px rgba(0,0,0,.1);
+        }
+        .news-author img{
+          width:90px;
+          height:90px;
+          border-radius:50%;
+          object-fit:cover;
+          border:3px solid #f9c7cf;
+        }
+        .news-author-info{ flex:1; }
+        .news-author-info strong{
+          display:block;
+          font-size:19px;
+          color:#c40050;
+          cursor:pointer;
+          transition: color .2s;
+        }
+        .news-author-info strong:hover{
+          color:#a90045;
+          text-decoration:underline;
+        }
+        .news-author-info span{
+          display:block;
+          margin-top:4px;
+        }
+        .author-socials{
+          display:flex;
+          gap:10px;
+          margin-top:10px;
+        }
+        .author-socials img{
+          width:28px;
+          height:28px;
         }
       `}</style>
 
       {/* HERO */}
       <Reveal className="news-hero">
-        <picture>
-          <source srcSet={portada} type="image/avif" />
-          <source srcSet={portada} type="image/webp" />
-          <img
-            src={portada}
-            alt={post.titulo}
-            width={1600}
-            height={685}
-            decoding="async"
-            loading="eager"
-            fetchpriority="high"
-            sizes="(max-width: 900px) 92vw, 840px"  /* pide tamaño acorde al nuevo ancho */
-            onError={(e) => { e.currentTarget.src = '/images/placeholder.jpg' }}
-          />
-        </picture>
+        <img src={portada} alt={post.titulo} />
       </Reveal>
 
-      {/* Header (mismo ancho que hero) */}
+      {/* HEADER */}
       <section className="news-header">
         {post.categoria && <div className="pill">{post.categoria.nombre}</div>}
         <Reveal as="h1">{post.titulo}</Reveal>
 
         <div className="news-meta">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M7 2v3M17 2v3M3 9h18M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-          </svg>
           {post.fecha_publicacion && (
             <span>
               {new Date(post.fecha_publicacion).toLocaleDateString('es-PE', {
@@ -250,72 +355,74 @@ export default function NoticiaDetalle() {
         </div>
       </section>
 
-      {/* Contenido */}
+      {/* CONTENIDO */}
       <section className="news-card">
         <div className="news-content">
-          {blocks.map(b => (
-            <p key={b.key} className={b.className}>{b.text}</p>
-          ))}
+          {blocks.map(b => {
+            if (b.type === 'paragraph') {
+              return <p key={b.key} className={b.className}>{b.text}</p>
+            }
 
-          {post.imagenes?.map((img) => {
-            const u = absUrl(img.url)
-            return (
-              <div key={img.id} className="news-image">
-                <picture>
-                  <source srcSet={u} type="image/avif" />
-                  <source srcSet={u} type="image/webp" />
-                  <img
-                    src={u}
-                    alt={img.origen || 'Imagen del artículo'}
-                    loading="lazy"
-                    decoding="async"
-                    width={1200}
-                    height={800}
-                    onError={(e)=>{ e.currentTarget.src='/images/placeholder.jpg' }}
-                  />
-                </picture>
-                {img.origen && <span>📸 {img.origen}</span>}
-              </div>
-            )
+            if (b.type === 'image') {
+              return (
+                <div key={b.key} className="news-image">
+                  <img src={b.url} alt={b.origen || 'Imagen del artículo'} />
+                  {b.origen && <div className="news-image-caption">{b.origen}</div>}
+                </div>
+              )
+            }
+
+            if (b.type === 'video') {
+              return (
+                <div key={b.key} className="news-video">
+                  <iframe src={b.url} allowFullScreen />
+                </div>
+              )
+            }
+
+            return null
           })}
 
-          {post.videos?.map((vid) => {
-            const embed = (vid.url || '').includes('watch?v=') ? vid.url.replace('watch?v=','embed/') : vid.url
-            return (
-              <div key={vid.id} className="news-video">
-                <iframe
-                  src={embed}
-                  title={vid.titulo || 'Video'}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                />
-              </div>
-            )
-          })}
-
+          {/* AUTOR */}
           {post.autor && (
             <div className="news-author">
               {post.autor.foto && (
                 <img
                   src={absUrl(post.autor.foto)}
                   alt={post.autor.nombre}
-                  width={90} height={90}
-                  loading="lazy" decoding="async"
-                  onError={(e)=>{ e.currentTarget.src='/images/placeholder.jpg' }}
+                  loading="lazy"
+                  decoding="async"
                 />
               )}
+
               <div className="news-author-info">
-                <strong onClick={() => nav(`/autor/${post.autor.slug}`)}>{post.autor.nombre}</strong>
+                <strong onClick={() => nav(`/autor/${post.autor.slug}`)}>
+                  {post.autor.nombre}
+                </strong>
+
                 {post.autor.cargo && <span>{post.autor.cargo}</span>}
+
                 <div className="author-socials">
-                  {post.autor.linkedin && <a href={post.autor.linkedin} target="_blank" rel="noopener noreferrer"><img src="/icons/linkedin.png" alt="LinkedIn" loading="lazy" /></a>}
-                  {post.autor.instagram && <a href={post.autor.instagram} target="_blank" rel="noopener noreferrer"><img src="/icons/instagram.png" alt="Instagram" loading="lazy" /></a>}
-                  {post.autor.twitter && <a href={post.autor.twitter} target="_blank" rel="noopener noreferrer"><img src="/icons/twitter.png" alt="Twitter" loading="lazy" /></a>}
+                  {post.autor.linkedin && (
+                    <a href={post.autor.linkedin} target="_blank" rel="noopener noreferrer">
+                      <img src="/icons/linkedin.png" alt="LinkedIn" />
+                    </a>
+                  )}
+                  {post.autor.instagram && (
+                    <a href={post.autor.instagram} target="_blank" rel="noopener noreferrer">
+                      <img src="/icons/instagram.png" alt="Instagram" />
+                    </a>
+                  )}
+                  {post.autor.twitter && (
+                    <a href={post.autor.twitter} target="_blank" rel="noopener noreferrer">
+                      <img src="/icons/twitter.png" alt="Twitter" />
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
           )}
+
         </div>
       </section>
     </main>
